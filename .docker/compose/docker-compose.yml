@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  app:
+    container_name: pimcore_app
+    image: tommyprmbd/pimcore-alpine:php-8.1
+    volumes:
+      - ./../../:/apps/pimcore
+    networks:
+      pimcore_network:
+        ipv4_address: ${DOCKER_APP_IP_ADDRESS}
+  
+  web:
+    container_name: pimcore_web
+    image: pagespeed/nginx-pagespeed
+    ports:
+      - ${DOCKER_WEB_BIND_PORT}:80
+    volumes:
+      - ./../../:/apps/pimcore
+      - ./../config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      pimcore_network:
+        ipv4_address: ${DOCKER_WEB_IP_ADDRESS}
+
+networks:
+  pimcore_network:
+    ipam:
+      config:
+        - subnet: ${DOCKER_NETWORK_SUBNET}
