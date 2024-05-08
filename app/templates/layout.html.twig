@@ -1,0 +1,129 @@
+{# Stylesheet #}
+{% do pimcore_head_link().appendStylesheet(asset('template/assets/css/bootstrap.min.css')) %}
+{% do pimcore_head_link().appendStylesheet(asset('template/assets/css/lineicons.css')) %}
+{% do pimcore_head_link().appendStylesheet(asset('template/assets/css/tiny-slider.css')) %}
+{% do pimcore_head_link().appendStylesheet(asset('template/assets/css/glightbox.min.css')) %}
+{% do pimcore_head_link().appendStylesheet(asset('template/style.css')) %}
+{# Script #}
+{% do pimcore_head_script().appendFile(asset('template/assets/js/bootstrap.bundle.min.js')) %}
+{% do pimcore_head_script().appendFile(asset('template/js/glightbox.min.js')) %}
+{% do pimcore_head_script().appendFile(asset('template/assets/js/main.js')) %}
+{% do pimcore_head_script().appendFile(asset('template/assets/js/tiny-slider.js')) %}
+
+{% do pimcore_head_script().appendScript('
+    let navbarTogglerNine = document.querySelector(
+      ".navbar-nine .navbar-toggler"
+    );
+    navbarTogglerNine.addEventListener("click", function () {
+      navbarTogglerNine.classList.toggle("active");
+    });
+
+    // ==== left sidebar toggle
+    let sidebarLeft = document.querySelector(".sidebar-left");
+    let overlayLeft = document.querySelector(".overlay-left");
+    let sidebarClose = document.querySelector(".sidebar-close .close");
+
+    overlayLeft.addEventListener("click", function () {
+      sidebarLeft.classList.toggle("open");
+      overlayLeft.classList.toggle("open");
+    });
+    sidebarClose.addEventListener("click", function () {
+      sidebarLeft.classList.remove("open");
+      overlayLeft.classList.remove("open");
+    });
+
+    // ===== navbar nine sideMenu
+    let sideMenuLeftNine = document.querySelector(".navbar-nine .menu-bar");
+
+    sideMenuLeftNine.addEventListener("click", function () {
+      sidebarLeft.classList.add("open");
+      overlayLeft.classList.add("open");
+    });
+
+    //========= glightbox
+    GLightbox({
+      \'href\': \'https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM\',
+      \'type\': \'video\',
+      \'source\': \'youtube\', //vimeo, youtube or local
+      \'width\': 900,
+      \'autoplayVideos\': true,
+    });
+  ') %}
+
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+
+	<head>
+		<!--====== Required meta tags ======-->
+		<meta charset="utf-8"/>
+		<meta http-equiv="x-ua-compatible" content="ie=edge"/>
+		<meta name="description" content=""/>
+		<meta
+		name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    {% if not document is defined or not document %}
+      {% set document = pimcore_document(1) %}
+    {% endif %}
+
+    {% if document is instanceof('\\Pimcore\\Model\\Document\\Link') %}
+      {# @var document \Pimcore\Model\Document\Link #}
+      {% set document = document.getElement() %}
+    {% endif %}
+		<!--====== Title ======-->
+		{% if document is instanceof('\\Pimcore\\Model\\Document\\Page') %}
+			{% if document.getTitle() is not empty %}
+        {{ document.getTitle() }}
+				{% do pimcore_head_title().set(document.getTitle()) %}
+			{% endif %}
+
+			{% if document.getDescription() is not empty %}
+				{% do pimcore_head_meta().setDescription(document.getDescription()) %}
+			{% endif %}
+
+			{% do pimcore_head_title().append('Pimcore Demo') %}
+			{% do pimcore_head_title().setSeparator(' : ') %}
+		{% endif %}
+
+		<!--====== Favicon Icon ======-->
+		<link rel="shortcut icon" href="{{ asset('template/assets/images/favicon.svg') }}" type="image/svg"/>
+
+    {{ pimcore_head_title() }}
+		{% block head_stylesheets deferred %}
+      {{ pimcore_head_link() }}
+    {% endblock %}
+	</head>
+
+	<body>
+
+  <!--====== NAVBAR NINE PART START ======-->
+  {{ include('includes/navbar.html.twig') }}
+  <!--====== NAVBAR NINE PART ENDS ======-->
+
+  <!--====== SIDEBAR PART START ======-->
+  {{ include('includes/sidebar-left.html.twig') }}
+  <!--====== SIDEBAR PART ENDS ======-->
+
+  <!--====== CONTENT - start ======-->
+  {{ block('content') }}
+  <!--====== CONTENT - end ======-->
+
+
+  <!-- Start Footer Area -->
+  {{ include('includes/footer.html.twig') }}
+  <!--/ End Footer Area -->
+
+	<div class="made-in-ayroui mt-4">
+		<a href="https://ayroui.com" target="_blank" rel="nofollow">
+		  <img style="width:220px" src="assets/images/ayroui.svg">
+		</a>
+	</div>
+
+  <a href="#" class="scroll-top btn-hover">
+    <i class="lni lni-chevron-up"></i>
+  </a>
+
+  <!--====== js ======-->
+  {{ pimcore_head_script() }}
+</body>
+
+</html>
